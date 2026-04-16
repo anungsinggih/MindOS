@@ -1,17 +1,37 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, ShieldCheck, Lightbulb, TrendingUp, Moon, Sun, LogOut } from 'lucide-react';
+import { LayoutDashboard, BookOpen, ShieldCheck, Lightbulb, TrendingUp, Moon, Sun, LogOut, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 export default function Sidebar({ open, setOpen }) {
   const location = useLocation();
   const [theme, setTheme] = useState('dark');
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
   }, [theme]);
 
   const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark');
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+    }
+  };
 
   const navs = [
     { section: 'Utama' },
@@ -52,6 +72,14 @@ export default function Sidebar({ open, setOpen }) {
           );
         })}
       </nav>
+
+      {deferredPrompt && (
+        <div style={{ padding: '0 var(--space-4) var(--space-4)' }}>
+          <button className="btn btn-primary" style={{ width: '100%', display: 'flex', justifyContent: 'center' }} onClick={handleInstallClick}>
+            <Download style={{width: 16, height: 16}} /> Install MindOS App
+          </button>
+        </div>
+      )}
 
       <div className="sidebar-footer">
         <button className="theme-toggle" onClick={() => supabase.auth.signOut()} title="Logout" style={{marginRight: 'auto'}}>

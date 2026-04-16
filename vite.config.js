@@ -7,24 +7,21 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      includeAssets: ['mindos-icon.svg'],
       manifest: {
         name: 'MindOS Dashboard',
         short_name: 'MindOS',
         description: 'Your Personal Cognitive Restructuring OS',
-        theme_color: '#f7f6f2',
-        background_color: '#f7f6f2',
-        display: 'standalone',
+        theme_color: '#171614',
+        background_color: '#171614',
+        display: 'fullscreen',
+        orientation: 'portrait',
         icons: [
           {
-            src: 'vite.svg',
-            sizes: '192x192',
-            type: 'image/svg+xml'
-          },
-          {
-            src: 'vite.svg',
+            src: 'mindos-icon.svg',
             sizes: '512x512',
-            type: 'image/svg+xml'
+            type: 'image/svg+xml',
+            purpose: 'any maskable'
           }
         ]
       },
